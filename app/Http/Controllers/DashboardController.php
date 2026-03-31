@@ -11,6 +11,7 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
+        $user->load('image');
         $role = $user->role->name;
         $posts = Post::with('comments', 'images','user')->get();
         

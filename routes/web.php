@@ -12,15 +12,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/dashboard', function () {
-    return view('welcome')->name('dashboard');
-});
-Route::get('/home', function () {
-    return view('welcome');
-})->name('home');
-Route::get('/index', function () {
-    return view('welcome');
-})->name('posts.index');
 
 
 Route::get('/login', [AuthController::class, 'loginView']);
@@ -34,5 +25,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
 
 Route::resource('posts', PostController::class)->middleware('auth');
+Route::get('/test', function() {
+    return view('test');
+})->middleware('auth');
 Route::post('posts/{post}/comments', [CommentController::class, 'store'])->name('comments.store')->middleware('auth');
 Route::post('posts/{post}/images', [ImageController::class, 'store'])->name('images.store')->middleware('auth');

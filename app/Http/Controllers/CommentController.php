@@ -28,17 +28,15 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Post $post)
     {
         $data = $request->validate([
-            'content' => 'required|string',
-            'post_id' => 'required|exists:posts,id',
+            'comment' => 'required|string',
         ]);
 
-        
         $post->comments()->create([
-            'content' => $data['content'],
-            'user_id' => auth()->id(),
+            'comment' => $data['comment'],
+            'post_id' => $post->id,
         ]);
 
         return back();

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Image;
+
+use App\Http\Requests\PostUpdateRequest;
 
 use Illuminate\Http\Request;
 
@@ -31,19 +34,22 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
             'content' => 'required|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // 👈 image validation
+            'images' => 'required|array',
+            'images.*' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $post = auth()->user()->posts()->create($data);
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('images', 'public');
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $path = $file->store('images', 'public');
 
-            $post->images()->create([
-                'url' => $path
-            ]);
+                $post->images()->create([
+                    'url' => $path
+                ]);
+            }
         }
 
         return redirect()->route('dashboard');
@@ -52,9 +58,9 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Post $post)
     {
-        $post = Post::findOrFail($id);
+        $post = Post::findOrFail($post->id);
         return view('posts.show', compact('post'));
     }
 
@@ -69,13 +75,20 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Post $post)
+    public function update(PostUpdateRequest $request, Post $post)
     {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-        ]);
+        $data = $request->validated();
         $post->update($data);
+        if($request->hasFile('images')){
+            foreach($request->file('images') as $file){
+                $path = $file->store('images', 'public');
+                $post->images()->create([
+                    'url' => $path
+                ]);
+
+            }
+        }
+
         return redirect()->route('dashboard');
     }
 

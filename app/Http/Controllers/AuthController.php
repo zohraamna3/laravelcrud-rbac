@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Models\image;
+
+use App\Http\Requests\RegisterFormRequest;
+use App\Http\Requests\LoginFormRequest;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,12 +20,9 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
+    public function login(LoginFormRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $credentials = $request->validated();
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
@@ -29,31 +30,31 @@ class AuthController extends Controller
             return redirect()->route('dashboard');
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+        // return back()->withErrors([
+        //     'email' => 'The provided credentials do not match our records.',
+        // ]);
     }
     public function registerView()
     {
         return view('auth.register');
     }
-    public function register(Request $request)
+    public function register(RegisterFormRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        $data = $request->validated();
 
         $data['password'] = bcrypt($data['password']);
         $intialRole = Role::where('name', 'Viewer')->first();
         $data['role_id'] = $intialRole->id;
         
         $user = User::create($data);
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('profile_images', 'public');
+            $user->image()->create(['url' => $path]);
+        }
 
         auth()->login($user);
 
-        return redirect()->route('home');
+        return redirect()->route('dashboard');
     }
 
     public function logout(Request $request)
