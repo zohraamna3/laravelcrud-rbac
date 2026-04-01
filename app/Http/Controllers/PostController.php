@@ -6,6 +6,10 @@ use App\Models\Post;
 use App\Models\Image;
 
 use App\Http\Requests\PostUpdateRequest;
+use App\Http\Requests\PostValidateRequest;
+
+
+use App\Services\PostService;
 
 use Illuminate\Http\Request;
 
@@ -14,10 +18,16 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
+    protected $postService;
+
+    public function __construct(PostService $postService)
+    {
+        $this->postService = $postService;
+    }
+
     public function index()
     {
-        $posts=Post::with('comments', 'images')->get();
-        return view('posts.index', compact('posts'));
+       //
     }
 
     /**
@@ -31,26 +41,11 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(PostValidateRequest $request)
     {
-        $data = $request->validate([
-            'title' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
-            'content' => 'required|string',
-            'images' => 'required|array',
-            'images.*' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+        $data = $request->validated();
 
-        $post = auth()->user()->posts()->create($data);
-
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $file) {
-                $path = $file->store('images', 'public');
-
-                $post->images()->create([
-                    'url' => $path
-                ]);
-            }
-        }
+        $post = $this->postService->createPost($data, $request);
 
         return redirect()->route('dashboard');
     }
@@ -60,7 +55,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $post = Post::findOrFail($post->id);
+        $post = $this->postService->showPost($post);
         return view('posts.show', compact('post'));
     }
 
@@ -78,16 +73,7 @@ class PostController extends Controller
     public function update(PostUpdateRequest $request, Post $post)
     {
         $data = $request->validated();
-        $post->update($data);
-        if($request->hasFile('images')){
-            foreach($request->file('images') as $file){
-                $path = $file->store('images', 'public');
-                $post->images()->create([
-                    'url' => $path
-                ]);
-
-            }
-        }
+        $this->postService->updatePost($post, $data, $request);
 
         return redirect()->route('dashboard');
     }
@@ -97,8 +83,9 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        $post = Post::findOrFail($id);
-        $post->delete();
-        return redirect()->route('dashboard');
+        if ($this->postService->deletePost($id)) {
+            return redirect()->route('dashboard')->with('success', 'Post deleted successfully.');
+        }
+        
     }
 }

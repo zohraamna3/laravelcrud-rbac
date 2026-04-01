@@ -19,7 +19,7 @@
         @if(auth()->user()->role->name !== 'Viewer')
             <form action="{{ route('images.store', $post) }}" method="POST" enctype="multipart/form-data" class="space-y-2 mb-6">
                 @csrf
-                <input type="file" name="file" required
+                <input type="file" name="images[]" multiple required
                     class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-blue-600 file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-white hover:file:text-blue-600 file:transition file:duration-200 cursor-pointer">
                 <button type="submit"
                     class="w-full bg-blue-600 hover:bg-white hover:text-blue-600 border border-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">

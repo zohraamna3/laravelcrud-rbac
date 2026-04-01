@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ImageValidateRequest;
+
+use App\Services\PostService;
+
 use Illuminate\Http\Request;
 
 class ImageController extends Controller
@@ -9,6 +13,13 @@ class ImageController extends Controller
     /**
      * Display a listing of the resource.
      */
+    protected $postService;
+
+    public function __construct(PostService $postService)
+    {
+        $this->postService = $postService;
+    }
+
     public function index()
     {
         //
@@ -25,17 +36,11 @@ class ImageController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, $postId)
+    public function store(ImageValidateRequest $request, $postId)
     {  
-        $request->validate([
-            'file' => 'required|image|max:2048',
-        ]);
-
-        $path = $request->file('file')->store('images', 'public');
-
-        \App\Models\Post::find($postId)->images()->create([
-            'url' => $path,
-        ]);
+        $request->validated();
+        $this->postService->updateImageOnly($request, $postId);
+        
 
         return back();
     }
