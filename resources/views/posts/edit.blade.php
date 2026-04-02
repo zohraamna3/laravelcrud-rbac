@@ -27,7 +27,7 @@
                     class="rounded-lg border border-gray-200 shadow-sm object-cover">
             @endforeach
 
-            <input type="file" name="images[]" multiple
+            <input type="file" name="images[]" multiple accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
                 class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-blue-600 file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-white hover:file:text-blue-600 file:transition file:duration-200 cursor-pointer">
             @foreach ($errors->get('images.*') as $messages)
                 @foreach ($messages as $message)

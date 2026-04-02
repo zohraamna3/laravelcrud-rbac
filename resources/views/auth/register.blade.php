@@ -63,7 +63,8 @@
                         type="file" 
                         name="image"
                         required
-                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-white hover:file:text-blue-600 file:border file:border-blue-600 file:transition file:duration-200 cursor-pointer"
+                        accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-white hover:file:text-blue-600 file:border file:border-blue-600 file:transition file:duration-200 cursor-pointer"
                     >
                     @error('image')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>

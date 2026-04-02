@@ -6,7 +6,8 @@ use App\Models\User;
 use App\Models\Image;
 use App\Models\Post;
 
-use App\Http\Requests\RegistrationFormRequest;
+use App\Interfaces\ImageRepositoryInterface;
+
 use App\Http\Requests\PostValidateRequest;
 use App\Http\Requests\PostUpdateRequest;
 use App\Http\Requests\ImageValidateRequest;
@@ -14,13 +15,22 @@ use App\Http\Requests\ImageValidateRequest;
 
 class ImageService
 {
-    public function storeImage(RegistrationFormRequest $request, User $user)
+    protected $imageRepository;
+
+    public function __construct(ImageRepositoryInterface $imageRepository)
     {
-        if($request->hasFile('image')) {
-            $path = $request->file('image')->store('profile_images', 'public');
-            $user->image()->create(['url' => $path]);
-            return;
-        } 
+        $this->imageRepository = $imageRepository;
+    }
+    
+    public function storeImage($request, User $user)
+    {
+        // if($request->hasFile('image')) {
+        //     $path = $request->file('image')->store('profile_images', 'public');
+        //     $user->image()->create(['url' => $path]);
+        //     return;
+        // } 
+        $path = $request->file('image')->store('profile_images', 'public');
+        $this->imageRepository->storeImage($user, $path);
     }
 
     public function storeImageForPost(PostValidateRequest $request, Post $post)

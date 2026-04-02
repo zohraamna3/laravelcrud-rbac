@@ -19,7 +19,7 @@
         @if(auth()->user()->role->name !== 'Viewer')
             <form action="{{ route('images.store', $post) }}" method="POST" enctype="multipart/form-data" class="space-y-2 mb-6">
                 @csrf
-                <input type="file" name="images[]" multiple required
+                <input type="file" name="images[]" multiple required accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
                     class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-blue-600 file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-white hover:file:text-blue-600 file:transition file:duration-200 cursor-pointer">
                 <button type="submit"
                     class="w-full bg-blue-600 hover:bg-white hover:text-blue-600 border border-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
@@ -36,7 +36,7 @@
         @if(auth()->user()->role->name == 'Viewer')
             <form action="{{ route('comments.store', $post) }}" method="POST" class="space-y-2 mt-4">
                 @csrf
-                <textarea name="body" placeholder="Add a comment"
+                <textarea name="comment" placeholder="Add a comment"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows="3"></textarea>
                 <button type="submit"
                     class="w-full bg-blue-600 hover:bg-white hover:text-blue-600 border border-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">

@@ -3,11 +3,11 @@
 namespace App\Services;
 
 use App\Models\Post;
-use App\Models\Image;
+
+use App\Interfaces\PostRepositoryInteface;
 
 use App\Http\Requests\PostValidateRequest;
 use App\Http\Requests\PostUpdateRequest;
-use App\Http\Requests\ImageValidateRequest;
 
 use App\Services\ImageService;
 
